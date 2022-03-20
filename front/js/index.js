@@ -1,8 +1,3 @@
-/* let montest = document.getElementById("test")
-console.log(montest)
-montest.innerHTML="Hello world" */
-
-
 let url = "http://localhost:3000/api/products/";
 fetch( url , {method : 'GET'})
 .then(data => {
@@ -17,11 +12,12 @@ fetch( url , {method : 'GET'})
     products.forEach(product => {
         console.log(product.name)
         console.log(product.price)
+
         myHTML += `<a href="./product.html?id=${product._id}">
                         <article>
                             <img src="${product.imageUrl}" alt="${product.altTxt}">
                             <h3 class="productName">${product.name}</h3>
-                            <p class="productPrice">${product.price}</p>
+                            <p class="productPrice">${product.price} €</p>
                             <p class="productColors">${product.colors}</p>
                             <p class="productDescription">${product.description}</p>
                         </article>
@@ -30,8 +26,5 @@ fetch( url , {method : 'GET'})
 
     console.log(myHTML)
     HTML.innerHTML = myHTML
-
+    
 })
-
-
-// function numberformat
