@@ -1,78 +1,140 @@
-const urlParams = new URLSearchParams(window.location.search)
-const urlId = urlParams.get("id");
+// au changement de page on accede à la page du produit et on obtient les informations de ce produit
 
-let nameProduct = document.getElementById("title");
-let priceProduct = document.getElementById("price");
-let colorProduct = document.getElementById("colors");
-let descriptionProduct = document.getElementById("description");
-let productQuantity = document.getElementById("quantity");
-let imgProduct = document.querySelector(".item__img img");
+/* console.log(window.location);
+console.log(window.location.search); */
 
-getProduit();
+const urlSearch = new URLSearchParams(window.location.search);
+const urlParams = urlSearch.get('id');
 
-function getProduit() {
-    fetch("http://localhost:3000/api/products/" + urlId)
-    .then((response) => response.json())
-    .then (product => {
-        imgProduct.setAttribute("src", product.imageUrl);
-        imgProduct.setAttribute("alt", product.altTxt);
-        nameProduct.innerHTML = product.name;
-        priceProduct.innerHTML = product.price;
-        descriptionProduct.innerHTML = product.description;
+console.log(urlSearch);
+console.log(urlParams);
 
-        product.colors.forEach(color => { 
-            let optionColor = document.createElement("option");
-            optionColor.innerHTML = color
-            optionColor.value = color
-            colorProduct.appendChild(optionColor);
-        });
 
-        
-        addToCart(product);
-    });
-}
+let url = `http://localhost:3000/api/products/${urlParams}`;
 
-function addToCart(product) {
-    const addToCartBtn = document.querySelector("#addToCart");
-    
-    addToCartBtn.addEventListener("click", () => {
-      if (productQuantity.value > 0 && productQuantity.value < 100) {
+fetch(url)
+    .then(response => response.json()
+        .then(product => {
+            console.log(product);
 
-        let choixCouleur = colorProduct.value;
+            let img = document.createElement('img');
+            img.setAttribute('src', product.imageUrl);
+            img.setAttribute('alt', product.name);
+            
+            let itemImg = document.querySelector('.item__img');
+            itemImg.appendChild(img);
 
-        let choixQuantite = productQuantity.value;
+            let title = document.querySelector('#title');
+            title.innerText = product.name;
 
-        let optionProduit = {
-            idProduit: urlId,
-            couleurProduit: colorProduct,
-            quantiteProduit: Number(choixQuantite),
-            nomProduit: product.name,
-            prixProduit: product.price,
-            descriptionProduit: product.description,
-            imgProduit: product.imageUrl,
-            altImgProduit: product.altTxt
-        };
+            let price = document.querySelector('#price');
+            price.innerText = product.price;
 
-        let productLocalStorage = JSON.parse(localStorage.getItem("produit"));
+            let description = document.querySelector('#description');
+            description.innerText = product.description;
 
-        if (productLocalStorage) {
-            const resultFind = productLocalStorage.find((el) => el.idProduit === urlId && el.couleurProduit === colorProduct);
+            let colors = document.querySelector('#colors');
+            for (let i = 0; i < product.colors.length; i++) {
+                let color = document.createElement('option');
+                color.setAttribute('value', product.colors[i]);
+                color.innerText = product.colors[i];
+                colors.appendChild(color);         
+            };
 
-            if(resultFind) {
-                let newQuantite = parseInt(optionProduit.quantiteProduit) + parseInt(resultFind.quantiteProduit);
-                resultFind.quantiteProduit = newQuantite;
-                localStorage.setItem("produit", JSON.stringify(productLocalStorage));
-                console.table(productLocalStorage)
-            } else {
-                productLocalStorage.push(optionProduit);
-                localStorage.setItem("produit", JSON.stringify(productLocalStorage));
-                console.table(productLocalStorage);
+            document.querySelector('#addToCart').addEventListener('click', function() {
+
+                let productColor = document.querySelector('#colors').value
+                let productQuantity = document.querySelector('#quantity').value
+
+                let optionProduit = {
+                    img : product.imageUrl,
+                    name : product.name,
+                    id : product._id,
+                    color : productColor,
+                    price : product.price,
+                    quantity : Number(productQuantity),
+                };
+
+                let produitLocalStorage = JSON.parse(localStorage.getItem('produit'));
+            
+            if(optionProduit.quantity >= 0 && optionProduit.quantity < 100) {
+                if (produitLocalStorage) {
+                    let foundProduct = produitLocalStorage.find(p => p.id == optionProduit.id && p.color == optionProduit.color);
+                    if(foundProduct) {
+                        parseInt(foundProduct.quantity += optionProduit.quantity);
+                        localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
+                    } else {
+                        produitLocalStorage.push(optionProduit);
+                        localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
+                    }
+                } else {
+                    produitLocalStorage = [];
+                    produitLocalStorage.push(optionProduit);
+                    localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
+                }   
             }
-        } else {
-            productLocalStorage = [];
-            productLocalStorage.push(optionProduit);
-            localStorage.setItem("produit", JSON.stringify(productLocalStorage));
-            console.table(productLocalStorage);
-        }}
-    });
-}
+        });
+    }));
+
+        /* function saveBasket(basket){
+            localStorage.setItem('product', JSON.stringify(basket));
+        }
+
+        function getBasket(){
+            let basket = localStorage.getItem('product');
+            if(basket == null){
+                return [];
+            } else {
+                return JSON.parse(basket);
+            }
+
+        }
+
+        function addBasket(product){
+            let basket = getBasket();
+            let foundProduct = basket.find(p => p.id == product.id);
+            if (foundProduct != undefined){
+                foundProduct.quantity++;
+            } else {
+                product.quantity = 1;
+                basket.push(product); 
+            }
+            saveBasket(basket);
+        }
+
+        function removeFromBasket(product){
+            let basket = getBasket();
+            basket = basket.filter(p => p.id != product.id);
+            saveBasket(basket);
+        }
+
+        function changeQuantity(product, quantity){
+            let basket = basket();
+            let foundProduct = basket.find(p => p.id == product.id);
+            if (foundProduct != undefined){
+                foundProduct.quantity += quantity;
+                if(foundProduct.quantity <= 0){
+                    removeFromBasket(foundProduct);
+                } else {
+                    saveBasket(basket);
+                }
+            } 
+        }
+
+        function getNumberProduct(){
+            let basket = getBasket();
+            let number = 0;
+            for (let product of basket) {
+                number += product.quantity;
+            }
+            return number;
+        }
+
+        function getTotalPrice() {
+            let basket = getBasket();
+            let total = 0;
+            for(let product of basket){
+                total += product.quantity * product.price;
+            }
+            return total;
+        } */
