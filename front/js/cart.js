@@ -90,8 +90,10 @@ console.log(produitLocalStorage.id);
 
 for (let i = 0; i < deleteButton.length; i++){
     deleteButton[i].addEventListener('click', function(){
+        // selection de l'id du produit qui va être supprimé en cliquant sur le bouton
         let supprimerProduit = produitLocalStorage[i].id;
         console.log(supprimerProduit);
+        // avec filter je selectionne les éléments à garder et je supprime celui cliqué
         produitLocalStorage = produitLocalStorage.filter(p => p.id != supprimerProduit);
         console.log(produitLocalStorage);
         localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
@@ -147,7 +149,7 @@ let address = document.querySelector('#address');
     });
 
     const validAddress = (inputAddress) => {
-        let addressRegExp = new RegExp ("^[A-za-z0-9]{5,50}$");
+        let addressRegExp = new RegExp ("^[a-zA-Z0-9 \s]{5,50}$");
 
         let testAddress = addressRegExp.test(inputAddress.value);
 

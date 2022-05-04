@@ -57,21 +57,21 @@ fetch(url)
 
                 let produitLocalStorage = JSON.parse(localStorage.getItem('produit'));
             
-            if(optionProduit.quantity >= 0 && optionProduit.quantity < 100) {
+            if(optionProduit.quantity >= 0) {
                 if (produitLocalStorage) {
                     let foundProduct = produitLocalStorage.find(p => p.id == optionProduit.id && p.color == optionProduit.color);
+                    console.log(foundProduct)
                     if(foundProduct) {
                         parseInt(foundProduct.quantity += optionProduit.quantity);
-                        localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
                     } else {
                         produitLocalStorage.push(optionProduit);
-                        localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
                     }
                 } else {
                     produitLocalStorage = [];
                     produitLocalStorage.push(optionProduit);
-                    localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
-                }   
+                } 
+
+                localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
             }
         });
     }));
