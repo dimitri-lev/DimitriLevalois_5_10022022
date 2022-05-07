@@ -73,8 +73,10 @@ fetch(url)
 
                 localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
             }
+            alert('Le produit a bien été ajouté au panier')
         });
-    }));
+    }))
+    .catch(error => console.log(error));
 
         /* function saveBasket(basket){
             localStorage.setItem('product', JSON.stringify(basket));

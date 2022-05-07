@@ -1,13 +1,16 @@
 // Récupérer les données des produits sur le serveur
 // Créer le html pour intégrer les produits
 
+// on obtient une promesse qui contient les données json, on rend ces données utilisable
+// on recupère les produits qu'on affiche dans la console
+// pour chaque produit je crée le html avec les bonnes variables 
 
 let url = 'http://localhost:3000/api/products';
 fetch(url)
-    .then(response => response.json()           // on obtient une promesse qui contient les données json, on rend ces données utilisable
-        .then(products => {                     // on recupère les produits qu'on affiche dans la console
+    .then(response => response.json()           
+        .then(products => {                     
             console.log(products)
-            for (let product of products) {     // pour chaque produit je crée le html avec les bonnes variables 
+            for (let product of products) {     
                 console.log(product);
 
                 let a = document.createElement('a');
@@ -33,5 +36,6 @@ fetch(url)
                 
                 let items = document.querySelector('#items');
                 items.appendChild(a);
-            }
-        }));
+            } 
+    }))
+    .catch(error => console.log(error));
