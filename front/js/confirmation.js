@@ -1,11 +1,13 @@
-
 function main() {
+    
+    const idSearch = new URLSearchParams(window.location.search);
+    const idParams = idSearch.get('id');
+    console.log(idParams);
+
     const idOrder = document.getElementById('orderId');
-    idOrder.innerHTML = localStorage.getItem('orderId');
+    idOrder.innerHTML = idParams;
 
-    console.log(localStorage.getItem('orderId'));
-
-    /* localStorage.clear(); */
+    localStorage.clear();
 }
 
 main();

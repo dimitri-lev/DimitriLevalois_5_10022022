@@ -5,6 +5,14 @@ let number = 0;
 
 // pour tout les produits qui se trouvent dans le local storage je crée le html et j'ajoute les informations des produits
 
+if (!produitLocalStorage) {
+    let panierVide = document.querySelector('#cart__items');
+    panierVide.innerText = 'Le panier est vide';
+    panierVide.style.textAlign = "center";
+    panierVide.style.fontSize = "22px";
+    panierVide.style.paddingBottom = "20px"
+}
+
 let basket = () => {
 
     if (produitLocalStorage!=null) {
@@ -70,7 +78,10 @@ let basket = () => {
             cartItemContentSettingQuantity.appendChild(input)
 
             input.addEventListener('input', function() {
-                quantite.innerText = 'Qté : ' + this.value
+                quantite.innerText = 'Qté : ' + this.value;
+                product.quantity = this.value;
+                localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
+                location.reload();
             });
         
             let itemContentSettingDelete = document.createElement('div')
@@ -81,22 +92,15 @@ let basket = () => {
             deleteItem.className = 'deleteItem'
             deleteItem.innerText = 'Supprimer'
             deleteItem.style.cursor = 'pointer'
+            deleteItem.style.width = '90px'
             itemContentSettingDelete.appendChild(deleteItem)
     
             let totalQuantity = document.querySelector('#totalQuantity');
-            totalQuantity.innerText = total += product.quantity;
-    
-            let totalPrice = document.querySelector('#totalPrice');
-            totalPrice.innerText = number += product.price * product.quantity;
-        }
-    }
+            totalQuantity.innerText = total += parseInt(product.quantity);
 
-    if (produitLocalStorage.length == 0) {
-        let panierVide = document.querySelector('#cart__items');
-        panierVide.innerText = 'Le panier est vide';
-        panierVide.style.textAlign = "center";
-        panierVide.style.fontSize = "22px";
-        panierVide.style.paddingBottom = "20px"
+            let totalPrice = document.querySelector('#totalPrice');
+            totalPrice.innerText = number += product.price * product.quantity;           
+        }
     }
 }
 
@@ -149,7 +153,7 @@ deleteButton()
 
         console.log(testFirstName);
 
-        if (testFirstName == false) {
+        if (testFirstName == false || testFirstName == null) {
             document.querySelector('#firstNameErrorMsg').innerText = 'Prénom invalide';
             return false
         } else {
@@ -165,24 +169,28 @@ deleteButton()
 
         console.log(testLastName);
 
-        if (testLastName == false) {
+        if (testLastName == false || testLastName == null) {
             document.querySelector('#lastNameErrorMsg').innerText = 'Nom invalide';
+            return false
         } else {
             document.querySelector('#lastNameErrorMsg').innerText = 'Nom valide';
+            return true
         };
     };
 
     const validAddress = (inputAddress) => {
-        let addressRegExp = new RegExp ("^[a-zA-Z0-9 \s]{5,50}$");
+        let addressRegExp = new RegExp ("^[a-zA-Z0-9 \s]{3,50}$");
 
         let testAddress = addressRegExp.test(inputAddress.value);
 
         console.log(testAddress);
 
-        if (testAddress == false) {
+        if (testAddress == false || testAddress == null) {
             document.querySelector('#addressErrorMsg').innerText = 'Adresse invalide';
+            return false
         } else {
             document.querySelector('#addressErrorMsg').innerText = 'Adresse valide';
+            return true
         };
     };
 
@@ -193,10 +201,12 @@ deleteButton()
 
         console.log(testCity);
 
-        if (testCity == false) {
+        if (testCity == false || testCity == null) {
             document.querySelector('#cityErrorMsg').innerText = 'Ville invalide';
+            return false
         } else {
             document.querySelector('#cityErrorMsg').innerText = 'Ville valide';
+            return true
         };
     };
 
@@ -207,10 +217,12 @@ deleteButton()
 
         console.log(testEmail);
 
-        if (testEmail == false) {
+        if (testEmail == false || testEmail == null) {
             document.querySelector('#emailErrorMsg').innerText = 'Email invalide';
+            return false
         } else {
             document.querySelector('#emailErrorMsg').innerText = 'Email valide';
+            return true
         };
     };
 // }
@@ -230,37 +242,21 @@ function postForm() {
         let inputCity = document.querySelector('#city');
         let inputEmail = document.querySelector('#email');
 
-/*     let valueFormulaire = {
-        prenom : inputFirstName.value,
-        nom : inputLastName.value,
-        adresse : inputAddress.value,
-        city : inputCity.value,
-        mail : inputEmail.value,
-    } */
-        
-            /* localStorage.setItem('valueFormulaire', JSON.stringify(valueFormulaire)); */
-
-            // console.log(inputFirstName.value);
-
-            if (!validFistName(inputFirstName) || !inputLastName.value || !inputAddress.value || !inputCity.value || !inputEmail.value) {
+            if (!validFistName(inputFirstName) || !validLastName(inputLastName) || !validAddress(inputAddress) || !validCity(inputCity) || !validEmail(inputEmail)) {
                 
                 alert('Formulaire invalide');
-
+                
             } else {
+
+                console.log('test');
 
                 let productsBought = [];
                 
-                productsBought.push(produitLocalStorage.id);
-                productsBought = ["055743915a544fde83cfdfc904935ee7" , "055743915a544fde83cfdfc904935ee7"];
+                for(let i = 0; i < produitLocalStorage.length; i++) {
+                    productsBought.push(produitLocalStorage[i].id);
+                }
 
-                // contact: {
-                //     *   firstName: string,
-                //     *   lastName: string,
-                //     *   address: string,
-                //     *   city: string,
-                //     *   email: string
-                //     * }
-                //     * products: [string] <-- array of product _id
+                console.log(productsBought);
 
                 const aEnvoyer = {
                     contact : {
@@ -285,14 +281,12 @@ function postForm() {
                 fetch("http://localhost:3000/api/products/order", options)
                 .then((response) => response.json())
                 .then((data) => {
-
-                    /* localStorage.clear(); */
                     
                     console.log(data);
-                    //Via URL variable
+
                     localStorage.setItem('orderId', data.orderId);
 
-                    /* document.location.href = 'confirmation.html'; */
+                    document.location.href = 'confirmation.html?id=' + data.orderId;
                 })
                 .catch(error => console.log(error));
             };
