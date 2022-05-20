@@ -15,7 +15,7 @@ if (!produitLocalStorage) {
 
 let basket = () => {
 
-    if (produitLocalStorage!=null) {
+    if (produitLocalStorage != null) {
         for (let product of produitLocalStorage) {
     
             let cartItem = document.querySelector('#cart__items')
@@ -106,20 +106,28 @@ let basket = () => {
 
 basket();
 
+// au click je supprime le produit du local storage avec la méthode filter
+
 let deleteButton = () => {
     let deleteItem = document.querySelectorAll('.deleteItem');
     console.log(deleteItem);
 
     for (let i = 0; i < deleteItem.length; i++){
         deleteItem[i].addEventListener('click', function(){
+
             // selection de l'id du produit qui va être supprimé en cliquant sur le bouton
+
             let supprimerProduitId = produitLocalStorage[i].id;
             let supprimerProduitColor = produitLocalStorage[i].color;
+
             // avec filter je selectionne les éléments à garder et je supprime celui cliqué
+
             produitLocalStorage = produitLocalStorage.filter(p => p.id != supprimerProduitId || p.color != supprimerProduitColor);
             console.log(produitLocalStorage);
             localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
-            /* alert('Ce produit a été supprimé du panier'); */
+
+            alert('Ce produit a bien été supprimé du panier');
+
             window.location.href ="../html/cart.html";
         })
     }
@@ -127,7 +135,8 @@ let deleteButton = () => {
 
 deleteButton()
 
-// function getForm() {
+// j'écoute les input du formulaire, pour chaque élément je met en place des règles regex, si la règle est respecté : validation sinon message d'erreur.
+
     let form = document.querySelector('.cart__order__form');
 
     form.firstName.addEventListener('change', function() {
@@ -225,9 +234,9 @@ deleteButton()
             return true
         };
     };
-// }
 
-// getForm();
+/* au click si tout les champs du formulaire sont valides alors on envoit les données du formulaire + données du local storage au backend via POST. 
+On obtient l'id de commande en réponse. */
 
 function postForm() {
     
@@ -284,8 +293,6 @@ function postForm() {
                     
                     console.log(data);
 
-                    localStorage.setItem('orderId', data.orderId);
-
                     document.location.href = 'confirmation.html?id=' + data.orderId;
                 })
                 .catch(error => console.log(error));
@@ -301,137 +308,7 @@ postForm();
 
 
 
-/* let formulaire  = () => {
-    let firstName = document.querySelector('#firstName');
 
-    firstName.addEventListener('change', function(){
-        validFirstName(this);
-    });
-
-    const validFirstName = (inputFirstName) => {
-        let firstNameRegExp = new RegExp ("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$");
-
-        let testFirstName = firstNameRegExp.test(inputFirstName.value);
-
-        console.log(testFirstName);
-
-        if (testFirstName == false) {
-            document.querySelector('#firstNameErrorMsg').innerText = 'Prénom invalide';
-            return false
-        } else {
-            document.querySelector('#firstNameErrorMsg').innerText = 'Prénom valide';
-            return true
-        };
-    };
-
-    let lastName = document.querySelector('#lastName');
-
-    lastName.addEventListener('change', function(){
-        validLastName(this);
-    });
-
-    const validLastName = (inputLastName) => {
-        let lastNameRegExp = new RegExp ("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$");
-
-        let testLastName = lastNameRegExp.test(inputLastName.value);
-
-        console.log(testLastName);
-
-        if (testLastName == false) {
-            document.querySelector('#lastNameErrorMsg').innerText = 'Nom invalide';
-        } else {
-            document.querySelector('#lastNameErrorMsg').innerText = 'Nom valide';
-        };
-    };
-
-    let address = document.querySelector('#address');
-
-    address.addEventListener('change', function(){
-        validAddress(this);
-    });
-
-    const validAddress = (inputAddress) => {
-        let addressRegExp = new RegExp ("^[a-zA-Z0-9 \s]{5,50}$");
-
-        let testAddress = addressRegExp.test(inputAddress.value);
-
-        console.log(testAddress);
-
-        if (testAddress == false) {
-            document.querySelector('#addressErrorMsg').innerText = 'Adresse invalide';
-        } else {
-            document.querySelector('#addressErrorMsg').innerText = 'Adresse valide';
-        };
-    };
-
-    let city = document.querySelector('#city');
-
-    city.addEventListener('change', function(){
-        validCity(this);
-    });
-
-    const validCity = (inputCity) => {
-        let cityRegExp = new RegExp ("^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$");
-
-        let testCity = cityRegExp.test(inputCity.value);
-
-        console.log(testCity);
-
-        if (testCity == false) {
-            document.querySelector('#cityErrorMsg').innerText = 'Ville invalide';
-        } else {
-            document.querySelector('#cityErrorMsg').innerText = 'Ville valide';
-        };
-    };
-
-    let email = document.querySelector('#email');
-
-    email.addEventListener('change', function(){
-        validEmail(this);
-    });
-
-    const validEmail = (inputEmail) => {
-        let emailRegExp = new RegExp ("^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$");
-
-        let testEmail = emailRegExp.test(inputEmail.value);
-
-        console.log(testEmail);
-
-        if (testEmail == false) {
-            document.querySelector('#emailErrorMsg').innerText = 'Email invalide';
-        } else {
-            document.querySelector('#emailErrorMsg').innerText = 'Email valide';
-        };
-    };
-
-    let order = document.querySelector('#order');
-
-    order.addEventListener('click', function(e) {
-        e.preventDefault();
-        let valueFormulaire = {
-            prenom : document.querySelector('#firstName').value,
-            nom : document.querySelector('#lastName').value,
-            adresse : document.querySelector('#address').value,
-            city : document.querySelector('#city').value,
-            mail : document.querySelector('#email').value,
-        }
-            console.log(valueFormulaire)
-            localStorage.setItem('valueFormulaire', JSON.stringify(valueFormulaire));
-
-            if (validFirstName(valueFormulaire.prenom) && validLastName(valueFormulaire.nom) && validAddress(valueFormulaire.adresse) && validCity(valueFormulaire.city) && validEmail(valueFormulaire.mail)) {
-                const aEnvoyer = {
-                    produitLocalStorage,
-                    valueFormulaire,
-                }
-                console.log(aEnvoyer);
-            } else {
-                alert('Formulaire invalide');
-            }
-            
-    })
-}
-
-formulaire(); */
 
 
 

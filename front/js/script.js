@@ -1,9 +1,9 @@
-// Récupérer les données des produits sur le serveur
-// Créer le html pour intégrer les produits
+/* Récupérer les données des produits sur le serveur
+Créer le html pour intégrer les produits
 
-// on obtient une promesse qui contient les données json, on rend ces données utilisable
-// on recupère les produits qu'on affiche dans la console
-// pour chaque produit je crée le html avec les bonnes variables 
+on obtient une promesse qui contient les données json, on rend ces données utilisable
+on recupère les produits qu'on affiche dans la console
+pour chaque produit je crée le html avec les bonnes variables */
 
 let url = 'http://localhost:3000/api/products';
 fetch(url)

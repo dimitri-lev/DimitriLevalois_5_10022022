@@ -1,3 +1,5 @@
+// je récupère l'id de l'url avec searchParams et je l'affiche. Je vide le localStorage
+
 function main() {
     
     const idSearch = new URLSearchParams(window.location.search);
