@@ -77,7 +77,7 @@ fetch(url)
                     alert('Le produit a bien été ajouté au panier')
 
                 } else {
-                    alert('Veuillez choisir une coulour et une quantité supérieur à 0')
+                    alert('Veuillez choisir une couleur et une quantité supérieur à 0')
                 }
         });
     }))
