@@ -220,7 +220,7 @@ deleteButton()
     };
 
     const validEmail = (inputEmail) => {
-        let emailRegExp = new RegExp ("^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$");
+        let emailRegExp = new RegExp ('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
 
         let testEmail = emailRegExp.test(inputEmail.value);
 
@@ -251,7 +251,7 @@ function postForm() {
         let inputCity = document.querySelector('#city');
         let inputEmail = document.querySelector('#email');
 
-            if (!validFistName(inputFirstName) || !validLastName(inputLastName) || !validAddress(inputAddress) || !validCity(inputCity) || !validEmail(inputEmail)) {
+            if (!validFistName(inputFirstName) || !validLastName(inputLastName) || !validAddress(inputAddress) || !validCity(inputCity) || !validEmail(inputEmail) || produitLocalStorage == null) {
                 
                 alert('Formulaire invalide');
                 
