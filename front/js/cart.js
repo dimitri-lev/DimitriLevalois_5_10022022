@@ -52,10 +52,6 @@ let basket = () => {
             h2.innerText = product.name;
             cartItemContentDescription.appendChild(couleur)
         
-            let prix = document.createElement('p')
-            prix.innerText = 'Prix : ' + product.price + ' €'
-            cartItemContentDescription.appendChild(prix)
-        
             let cartItemContentSetting = document.createElement('div')
             cartItemContentSetting.className = 'cart__item__content__setting'
             cartItemContent.appendChild(cartItemContentSetting)
@@ -79,7 +75,7 @@ let basket = () => {
 
             input.addEventListener('input', function() {
                 quantite.innerText = 'Qté : ' + this.value;
-                product.quantity = this.value;
+                product.quantity =  Number(this.value);
                 localStorage.setItem('produit', JSON.stringify(produitLocalStorage));
                 location.reload();
             });
@@ -93,13 +89,22 @@ let basket = () => {
             deleteItem.innerText = 'Supprimer'
             deleteItem.style.cursor = 'pointer'
             deleteItem.style.width = '90px'
-            itemContentSettingDelete.appendChild(deleteItem)
-    
-            let totalQuantity = document.querySelector('#totalQuantity');
-            totalQuantity.innerText = total += parseInt(product.quantity);
+            itemContentSettingDelete.appendChild(deleteItem)   
+            
+            fetch(`http://localhost:3000/api/products/${product.id}`) 
+                .then(response => response.json()
+                    .then(produit => {
+                        let prix = document.createElement('p')
+                        prix.innerText = 'Prix : ' + `${produit.price}` + ' €'
+                        cartItemContentDescription.appendChild(prix)
 
-            let totalPrice = document.querySelector('#totalPrice');
-            totalPrice.innerText = number += product.price * product.quantity;           
+                        let totalQuantity = document.querySelector('#totalQuantity');
+                        totalQuantity.innerText = total += product.quantity;
+
+                        let totalPrice = document.querySelector('#totalPrice');
+                        totalPrice.innerText = number += `${produit.price}` * product.quantity;   
+            }))
+            .catch(error => console.log(error));
         }
     }
 }

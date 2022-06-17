@@ -50,7 +50,6 @@ fetch(url)
                     name : product.name,
                     id : product._id,
                     color : productColor,
-                    price : product.price,
                     quantity : Number(productQuantity),
                 };
 
